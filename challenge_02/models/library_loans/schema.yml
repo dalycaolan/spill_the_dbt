@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+  - name: library
+    schema: main
+    tables:
+      - name: books_factual
+      - name: books_fictional
+      - name: loans
+      - name: members
+
+models:
+  - name: stg_books
+    columns:
+      - name: book_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_members
+    columns:
+      - name: membership_tier
+        tests:
+          - accepted_values:
+              values: ['Bronze','Silver', 'Gold']
+      - name: member_id
+        data_tests:
+          - not_null
+
+  - name: stg_loans
+    columns:
+      - name: loan_id
+        data_tests:
+          - not_null
+      - name: book_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_books')
+              field: book_id
+      - name: member_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_members')
+              field: member_id
