@@ -26,6 +26,10 @@ models:
       - name: member_id
         data_tests:
           - not_null
+      - name: member_name
+        tests:
+          - contains_digits:
+              severity: warn
 
   - name: stg_loans
     columns:
@@ -44,3 +48,31 @@ models:
           - relationships:
               to: ref('stg_members')
               field: member_id
+
+  - name: customers_with_late_fees
+    columns:
+      - name: fee_to_pay
+        tests:
+          - non_negative
+      - name: member_name
+        tests:
+          - one_row_per_customer
+      - name: member_name
+        tests:
+          - contains_digits:
+              severity: warn
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('solution')
+
+
+  - name: customer_withdrawals
+    columns:
+      - name: member_name
+        tests:
+          - contains_digits:
+              severity: warn
+
+seeds:
+  - name: solution
+  
